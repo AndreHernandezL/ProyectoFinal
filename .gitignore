@@ -1,0 +1,4 @@
+.vs/*
+Proyecto2_PrograIII/bin/Debug/*
+Proyecto2_PrograIII/obj/*
+!Proyecto2_PrograIII/obj/Proyecto2_PrograIII.csproj.nuget.g.targets

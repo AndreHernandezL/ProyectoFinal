@@ -1,0 +1,118 @@
+﻿@using Proyecto2_PrograIII.Components.Services
+@inject IJSRuntime JS
+@page "/"
+
+<div class="row">
+    <div class="col-12">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-insertar-tab" data-bs-toggle="tab" data-bs-target="#nav-insertar" type="button" role="tab" aria-controls="nav-insertar" aria-selected="true">Insertar</button>
+                <button class="nav-link" id="nav-desAnt-tab" data-bs-toggle="tab" data-bs-target="#nav-desAnt" type="button" role="tab" aria-controls="nav-desAnt" aria-selected="false">Desendientes / Antecesor</button
+                <button class="nav-link" id="nav-RmInicioFin-tab" data-bs-toggle="tab" data-bs-target="#nav-RmInicioFin" type="button" role="tab" aria-controls="nav-RmInicioFin" aria-selected="false">Nodos Interiores/Exteriores</button>
+                <button class="nav-link" id="nav-RmPosicion-tab" data-bs-toggle="tab" data-bs-target="#nav-RmPosicion" type="button" role="tab" aria-controls="nav-RmPosicion" aria-selected="false">Camino Interno/Externo</button>
+                <button class="nav-link" id="nav-RmDato-tab" data-bs-toggle="tab" data-bs-target="#nav-RmDato" type="button" role="tab" aria-controls="nav-RmDato" aria-selected="false">Comparación de Arboles</button>
+                <button class="nav-link" id="nav-Busqueda-tab" data-bs-toggle="tab" data-bs-target="#nav-Busqueda" type="button" role="tab" aria-controls="nav-Busqueda" aria-selected="false">Eliminación de Hojas</button>
+                <button class="nav-link" id="nav-AddDato-tab" data-bs-toggle="tab" data-bs-target="#nav-AddDato" type="button" role="tab" aria-controls="nav-AddDato" aria-selected="false">Intercambio de subarboles</button>
+            </div>
+            <div class="tab-content mt-3" id="nav-tabContent">
+                <!--CREAR ARBOLES E INSERTAR ELEMENTOS AL ARBOL-->
+                <div class="tab-pane fade show active" id="nav-insertar" role="tabpanel" aria-labelledby="nav-insertar-tab" tabindex="0">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="dato" class="form-label">Dato a Ingresar</label>
+                            <input type="number" class="form-control" id="dato" @bind="dato">
+                        </div>
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol a Ingresar</label>
+                            <select id="arbolSelecionado" class="form-select"  @bind="opcionIngreso">
+                                <option value="0">Nuevo Arbol</option>
+                                @foreach  (var arbolito in bosque.Arboles){
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="Ingresar">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+                 <!---------------------------------------------->
+                 <!--CREAR BUCAR DESENDIENTES ANTECESORES-->
+                 <div class="tab-pane fade show" id="nav-desAnt" role="tabpanel" aria-labelledby="nav-desAnt-tab">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select"  @bind="opcionIngreso">
+                                @foreach  (var arbolito in bosque.Arboles){
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label for="dato" class="form-label">Dato a Buscar</label>
+                            <input type="number" class="form-control" id="dato" @bind="dato">
+                        </div>
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="BuscarAntDes">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+                <!---------------------------------------------->
+            </div>
+        </nav>
+
+    </div>
+</div>
+
+<div id="graphContainer" class="mt-5 d-flex justify-content-center"></div>
+@rendermode InteractiveServer
+@code {
+    Bosque bosque = new Bosque();
+    private ElementReference graphContainer;
+    private string dotCode = "";
+    private int dato = 0;
+    private string opcionIngreso = "0";
+
+
+    public async Task RenderDot()
+    {
+        var svg = await JS.InvokeAsync<string>("renderGraphviz", dotCode);
+        await JS.InvokeVoidAsync("eval", $"document.getElementById('graphContainer').innerHTML = `{svg}`;");
+
+    }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void BuscarAntDes(){
+
+    }
+
+    private void Ingresar (){
+        if (opcionIngreso.Equals("0") && dato != 0)
+        {
+            string nombreArbol = $"Arbol_{bosque.nombreNuevo()}";
+            Arbol nuevoArbol = new Arbol();
+            nuevoArbol.Insertar(nuevoArbol.NodoRaiz, dato);
+            bosque.Arboles.Add(nombreArbol, nuevoArbol);
+            
+            //RENDERIZAMOS LA IMAGEN DEL ARBOL
+            opcionIngreso = nombreArbol;
+            dotCode = nuevoArbol.GenerarDot();
+            RenderDot();
+            dato = 0;
+        }
+        else if(!opcionIngreso.Equals("0") && dato != 0){
+            var arbolito = bosque.Arboles[opcionIngreso];
+            arbolito.Insertar(arbolito.NodoRaiz, dato);
+            
+            //RENDERIZAMOS LA IMAGEN DEL ARBOL
+            dotCode = arbolito.GenerarDot();
+            RenderDot();
+            dato = 0;
+        }
+    }
+    
+}
