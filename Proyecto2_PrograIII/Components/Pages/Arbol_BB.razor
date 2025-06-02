@@ -7,12 +7,12 @@
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-insertar-tab" data-bs-toggle="tab" data-bs-target="#nav-insertar" type="button" role="tab" aria-controls="nav-insertar" aria-selected="true">Insertar</button>
-                <button class="nav-link" id="nav-desAnt-tab" data-bs-toggle="tab" data-bs-target="#nav-desAnt" type="button" role="tab" aria-controls="nav-desAnt" aria-selected="false">Desendientes / Antecesor</button
-                <button class="nav-link" id="nav-RmInicioFin-tab" data-bs-toggle="tab" data-bs-target="#nav-RmInicioFin" type="button" role="tab" aria-controls="nav-RmInicioFin" aria-selected="false">Nodos Interiores/Exteriores</button>
-                <button class="nav-link" id="nav-RmPosicion-tab" data-bs-toggle="tab" data-bs-target="#nav-RmPosicion" type="button" role="tab" aria-controls="nav-RmPosicion" aria-selected="false">Camino Interno/Externo</button>
-                <button class="nav-link" id="nav-RmDato-tab" data-bs-toggle="tab" data-bs-target="#nav-RmDato" type="button" role="tab" aria-controls="nav-RmDato" aria-selected="false">Comparación de Arboles</button>
-                <button class="nav-link" id="nav-Busqueda-tab" data-bs-toggle="tab" data-bs-target="#nav-Busqueda" type="button" role="tab" aria-controls="nav-Busqueda" aria-selected="false">Eliminación de Hojas</button>
-                <button class="nav-link" id="nav-AddDato-tab" data-bs-toggle="tab" data-bs-target="#nav-AddDato" type="button" role="tab" aria-controls="nav-AddDato" aria-selected="false">Intercambio de subarboles</button>
+                <button class="nav-link" id="nav-desAnt-tab" data-bs-toggle="tab" data-bs-target="#nav-desAnt" type="button" role="tab" aria-controls="nav-desAnt" aria-selected="false">Desendientes / Antecesor</button>
+                <button class="nav-link" id="nav-NodointerExter-tab" data-bs-toggle="tab" data-bs-target="#nav-NodointerExter" type="button" role="tab" aria-controls="nav-NodointerExter" aria-selected="false">Nodos Interiores/Exteriores</button>
+                <button class="nav-link" id="nav-camInterExter-tab" data-bs-toggle="tab" data-bs-target="#nav-camInterExter" type="button" role="tab" aria-controls="nav-camInterExter" aria-selected="false">Camino Interno/Externo</button>
+                <button class="nav-link" id="nav-comparacion-tab" data-bs-toggle="tab" data-bs-target="#nav-comparacion" type="button" role="tab" aria-controls="nav-comparacion" aria-selected="false">Comparación de Arboles</button>
+                <button class="nav-link" id="nav-eliminacion-tab" data-bs-toggle="tab" data-bs-target="#nav-eliminacion" type="button" role="tab" aria-controls="nav-eliminacion" aria-selected="false">Eliminación de Hojas</button>
+                <button class="nav-link" id="nav-intercambio-tab" data-bs-toggle="tab" data-bs-target="#nav-intercambio" type="button" role="tab" aria-controls="nav-intercambio" aria-selected="false">Intercambio de subarboles</button>
             </div>
             <div class="tab-content mt-3" id="nav-tabContent">
                 <!--CREAR ARBOLES E INSERTAR ELEMENTOS AL ARBOL-->
@@ -31,7 +31,7 @@
                                 }
                             </select>
                         </div>
-                        <div class="col-4 d-flex justify-content-center align-items-center">
+                        <div class="col-4 d-flex justify-content-center align-items-end">
                             <button class="btn btn-primary" @onclick="Ingresar">Ingresar</button>
                         </div>
                     </div>
@@ -42,21 +42,59 @@
                     <div class="row">
                         <div class="col-4">
                             <label for="arbolSelecionado" class="form-label">Arbol</label>
-                            <select id="arbolSelecionado" class="form-select"  @bind="opcionIngreso">
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
                                 @foreach  (var arbolito in bosque.Arboles){
                                     <option value="@arbolito.Key">@arbolito.Key</option>
                                 }
                             </select>
                         </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-primary" @onclick="verArbol">Ver Arbol</button>
+                        </div>
                         <div class="col-4">
                             <label for="dato" class="form-label">Dato a Buscar</label>
                             <input type="number" class="form-control" id="dato" @bind="dato">
                         </div>
-                        <div class="col-4 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-end">
                             <button class="btn btn-primary" @onclick="BuscarAntDes">Buscar</button>
+                        </div>
+                        <div class="col-12 mt-3 d-flex">
+                            <div class="alert alert-primary" role="alert" style="width: fit-content">
+                                <p><strong>Padre: </strong>@(padre)</p>
+                                <p><strong>Hijo Derecho: </strong>@(hijo_derecho)</p>
+                                <p><strong>Hijo Izquierdo: </strong>@(hijo_izquierdo)</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!---------------------------------------------->
+                <!--MUESTRA LOS NODOS INTERNOS Y EXTERNOS-->
+                <div class="tab-pane fade" id="nav-NodointerExter" role="tabpanel">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-3 d-flex justify-content-center align-items-end">
+                            <button class="btn btn-primary" @onclick="NodoInterExter">Ver nodos</button>
+                        </div>
+                    </div>
+                </div>
+                <!---------------------------------------------->
+                <div class="tab-pane fade" id="nav-camInterExter" role="tabpanel">Contenido Caminos</div>
+                <!---------------------------------------------->
+                <div class="tab-pane fade" id="nav-comparacion" role="tabpanel">Contenido Comparación</div>
+                <!---------------------------------------------->
+                <div class="tab-pane fade" id="nav-eliminacion" role="tabpanel">Contenido Eliminación</div>
+                <!---------------------------------------------->
+                <div class="tab-pane fade" id="nav-intercambio" role="tabpanel">Contenido Intercambio</div>
                 <!---------------------------------------------->
             </div>
         </nav>
@@ -69,9 +107,13 @@
 @code {
     Bosque bosque = new Bosque();
     private ElementReference graphContainer;
-    private string dotCode = "";
+    private string dotCode = string.Empty;
     private int dato = 0;
     private string opcionIngreso = "0";
+    private string arbolSeleccionado = string.Empty;
+    private string hijo_derecho = string.Empty;
+    private string hijo_izquierdo = string.Empty;
+    private string padre = string.Empty;
 
 
     public async Task RenderDot()
@@ -88,6 +130,33 @@
 
     private void BuscarAntDes(){
 
+        if (arbolSeleccionado != "" && arbolSeleccionado != "0" && dato > 0)
+        {
+            var arbolito = bosque.Arboles[opcionIngreso];
+            Nodo nodoEncontrado = arbolito.Busqueda(arbolito.NodoRaiz, dato);
+            if (nodoEncontrado != null)
+            {
+                Nodo nodoPadre = arbolito.Padre(arbolito.NodoRaiz, dato);
+                string hijo_derecho = nodoEncontrado.RamaDerecha != null ? nodoEncontrado.RamaDerecha.Dato.ToString() : "No tiene hijo en la rama derecha";
+                string hijo_izquierdo = nodoEncontrado.RamaIzquierda != null ? nodoEncontrado.RamaIzquierda.Dato.ToString() : "No tiene hijo en la rama izquierda";
+                string padre = nodoPadre != null ? nodoPadre.Dato.ToString() : "No tiene nodo padre";
+
+                this.hijo_izquierdo = hijo_izquierdo;
+                this.hijo_derecho=  hijo_derecho;
+                this.padre = padre;
+
+            }
+        }
+    }
+
+    private void NodoInterExter()
+    {
+        Arbol arbolito = bosque.Arboles[arbolSeleccionado];
+        string resultado1 = arbolito.NodosInternos(arbolito.NodoRaiz);
+        string resultado2 = arbolito.NodosExternos(arbolito.NodoRaiz);
+        System.Diagnostics.Debug.WriteLine(resultado1);
+        System.Diagnostics.Debug.WriteLine(resultado2);
+
     }
 
     private void Ingresar (){
@@ -97,7 +166,7 @@
             Arbol nuevoArbol = new Arbol();
             nuevoArbol.Insertar(nuevoArbol.NodoRaiz, dato);
             bosque.Arboles.Add(nombreArbol, nuevoArbol);
-            
+
             //RENDERIZAMOS LA IMAGEN DEL ARBOL
             opcionIngreso = nombreArbol;
             dotCode = nuevoArbol.GenerarDot();
@@ -107,12 +176,43 @@
         else if(!opcionIngreso.Equals("0") && dato != 0){
             var arbolito = bosque.Arboles[opcionIngreso];
             arbolito.Insertar(arbolito.NodoRaiz, dato);
-            
+
             //RENDERIZAMOS LA IMAGEN DEL ARBOL
             dotCode = arbolito.GenerarDot();
             RenderDot();
             dato = 0;
         }
+    }
+
+    private void verArbol()
+    {
+        //RENDERIZAMOS LA IMAGEN DEL ARBOL
+        var arbolito = bosque.Arboles[opcionIngreso];
+        dotCode = arbolito.GenerarDot();
+        RenderDot();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("configurarTabs", DotNetObjectReference.Create(this));
+        }
+    }
+
+
+    [JSInvokable]
+    public void TabSeleccionado(string tabId)
+    {
+        // Limpiar variables cuando se cambia de pestaña
+        padre = string.Empty;
+        hijo_derecho = string.Empty;
+        hijo_izquierdo = string.Empty;
+
+        // Forzar recarga visual
+        InvokeAsync(StateHasChanged);
+
+        Console.WriteLine($"Pestaña activa: {tabId}");
     }
     
 }

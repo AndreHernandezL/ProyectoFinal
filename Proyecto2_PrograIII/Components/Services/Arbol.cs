@@ -194,16 +194,73 @@ namespace Proyecto2_PrograIII.Components.Services
             }
             else
             {
-                if (dato < Convert.ToInt32(nodo.Dato))
+                if (nodo.RamaDerecha != null || nodo.RamaIzquierda != null)
                 {
-                    return Padre(nodo.RamaIzquierda, dato);
+                    if (dato < Convert.ToInt32(nodo.Dato))
+                    {
+                        return Padre(nodo.RamaIzquierda, dato);
+                    }
+                    else
+                    {
+                        return Padre(nodo.RamaDerecha, dato);
+                    }
                 }
                 else
                 {
-                    return Padre(nodo.RamaDerecha, dato);
+                    return null;
                 }
             }
         }
+
+        public string NodosInternos(Nodo nodo)
+        {
+            if (nodo == null)
+            {
+                return "";
+            }
+
+            string resultado = "";
+
+            // Recorre rama izquierda
+            resultado += NodosInternos(nodo.RamaIzquierda);
+
+            // Nodo interno: tiene al menos un hijo (izquierdo o derecho)
+            if (nodo.RamaIzquierda != null || nodo.RamaDerecha != null)
+            {
+                resultado += $"[{nodo.Dato}] ";
+            }
+
+            // Recorre rama derecha
+            resultado += NodosInternos(nodo.RamaDerecha);
+
+            return resultado;
+        }
+
+        public string NodosExternos(Nodo nodo)
+        {
+            if (nodo == null)
+            {
+                return "";
+            }
+
+            string resultado = "";
+
+            // Recorre rama izquierda
+            resultado += NodosExternos(nodo.RamaIzquierda);
+
+            // Nodo hoja: no tiene hijos
+            if (nodo.RamaIzquierda == null && nodo.RamaDerecha == null)
+            {
+                resultado += $"[{nodo.Dato}] ";
+            }
+
+            // Recorre rama derecha
+            resultado += NodosExternos(nodo.RamaDerecha);
+
+            return resultado;
+        }
+
+
 
 
         /*private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)

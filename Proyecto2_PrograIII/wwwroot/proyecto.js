@@ -1,16 +1,16 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
-    const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]');
-    console.log(tabs)
-
+﻿window.configurarTabs = function (dotNetRef) {
+    const tabs = document.querySelectorAll('button[data-bs-toggle="tab"]');
     tabs.forEach(tab => {
         tab.addEventListener('shown.bs.tab', event => {
-            const tabId = event.target.id; // ID del tab clickeado
-            console.log("Tab activado:", tabId);
+            const id = event.target.id;
 
-            // Puedes ejecutar una acción personalizada aquí
-            if (tabId === "tab2-tab") {
-                alert("Se activó Tab 2");
+            // Limpiar el div al cambiar de pestaña
+            const container = document.getElementById("graphContainer");
+            if (container) {
+                container.innerHTML = ""; // Esto limpia el contenido
             }
+
+            dotNetRef.invokeMethodAsync('TabSeleccionado', id);
         });
     });
-});
+};
