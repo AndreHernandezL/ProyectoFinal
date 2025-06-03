@@ -9,6 +9,7 @@
                 <button class="nav-link active" id="nav-insertar-tab" data-bs-toggle="tab" data-bs-target="#nav-insertar" type="button" role="tab" aria-controls="nav-insertar" aria-selected="true">Insertar</button>
                 <button class="nav-link" id="nav-desAnt-tab" data-bs-toggle="tab" data-bs-target="#nav-desAnt" type="button" role="tab" aria-controls="nav-desAnt" aria-selected="false">Desendientes / Antecesor</button>
                 <button class="nav-link" id="nav-NodointerExter-tab" data-bs-toggle="tab" data-bs-target="#nav-NodointerExter" type="button" role="tab" aria-controls="nav-NodointerExter" aria-selected="false">Nodos Interiores/Exteriores</button>
+                <button class="nav-link" id="nav-NodoNivelGrado-tab" data-bs-toggle="tab" data-bs-target="#nav-NodoNivelGrado" type="button" role="tab" aria-controls="nav-NodoNivelGrado" aria-selected="false">Nodos Nivel/Grado</button>
                 <button class="nav-link" id="nav-camInterExter-tab" data-bs-toggle="tab" data-bs-target="#nav-camInterExter" type="button" role="tab" aria-controls="nav-camInterExter" aria-selected="false">Camino Interno/Externo</button>
                 <button class="nav-link" id="nav-comparacion-tab" data-bs-toggle="tab" data-bs-target="#nav-comparacion" type="button" role="tab" aria-controls="nav-comparacion" aria-selected="false">Comparación de Arboles</button>
                 <button class="nav-link" id="nav-eliminacion-tab" data-bs-toggle="tab" data-bs-target="#nav-eliminacion" type="button" role="tab" aria-controls="nav-eliminacion" aria-selected="false">Eliminación de Hojas</button>
@@ -36,9 +37,9 @@
                         </div>
                     </div>
                 </div>
-                 <!---------------------------------------------->
-                 <!--CREAR BUCAR DESENDIENTES ANTECESORES-->
-                 <div class="tab-pane fade show" id="nav-desAnt" role="tabpanel" aria-labelledby="nav-desAnt-tab">
+                <!---------------------------------------------->
+                <!--CREAR BUCAR DESENDIENTES ANTECESORES-->
+                <div class="tab-pane fade show" id="nav-desAnt" role="tabpanel" aria-labelledby="nav-desAnt-tab">
                     <div class="row">
                         <div class="col-4">
                             <label for="arbolSelecionado" class="form-label">Arbol</label>
@@ -86,7 +87,29 @@
                             <button class="btn btn-primary" @onclick="NodoInterExter">Ver nodos</button>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-success d-flex align-items-center" role="alert" style="gap: 5px; width: fit-content;">
+                                <strong>Nodos Interno:</strong>
+                                @for (int i = 0; i < interiores.Length-1; i++)
+                                {
+                                    <button type="button" class="btn btn-secondary rounded-circle">@(interiores[i])</button>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-primary d-flex align-items-center" role="alert" style="gap: 5px; width: fit-content;">
+                                <strong>Nodos Externos:</strong>
+                                @for (int i = 0; i < exteriores.Length - 1; i++)
+                                {
+                                    <button type="button" class="btn btn-danger rounded-circle">@(exteriores[i])</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <!---------------------------------------------->
+                <div class="tab-pane fade" id="nav-NodoNivelGrado" role="tabpanel">Contenido Grados y Nivel</div>
                 <!---------------------------------------------->
                 <div class="tab-pane fade" id="nav-camInterExter" role="tabpanel">Contenido Caminos</div>
                 <!---------------------------------------------->
@@ -115,6 +138,9 @@
     private string hijo_izquierdo = string.Empty;
     private string padre = string.Empty;
 
+    private string[] interiores = [];
+    private string[] exteriores = [];
+
 
     public async Task RenderDot()
     {
@@ -132,7 +158,7 @@
 
         if (arbolSeleccionado != "" && arbolSeleccionado != "0" && dato > 0)
         {
-            var arbolito = bosque.Arboles[opcionIngreso];
+            var arbolito = bosque.Arboles[arbolSeleccionado];
             Nodo nodoEncontrado = arbolito.Busqueda(arbolito.NodoRaiz, dato);
             if (nodoEncontrado != null)
             {
@@ -152,10 +178,11 @@
     private void NodoInterExter()
     {
         Arbol arbolito = bosque.Arboles[arbolSeleccionado];
-        string resultado1 = arbolito.NodosInternos(arbolito.NodoRaiz);
-        string resultado2 = arbolito.NodosExternos(arbolito.NodoRaiz);
-        System.Diagnostics.Debug.WriteLine(resultado1);
-        System.Diagnostics.Debug.WriteLine(resultado2);
+        string inter = arbolito.NodosInternos(arbolito.NodoRaiz);
+        string exter = arbolito.NodosExternos(arbolito.NodoRaiz);
+        interiores = inter.Split(' ');
+        exteriores = exter.Split(' ');
+        verArbol();
 
     }
 
@@ -187,7 +214,7 @@
     private void verArbol()
     {
         //RENDERIZAMOS LA IMAGEN DEL ARBOL
-        var arbolito = bosque.Arboles[opcionIngreso];
+        var arbolito = bosque.Arboles[arbolSeleccionado];
         dotCode = arbolito.GenerarDot();
         RenderDot();
     }
@@ -208,6 +235,9 @@
         padre = string.Empty;
         hijo_derecho = string.Empty;
         hijo_izquierdo = string.Empty;
+        dato = 0;
+        interiores = [];
+        exteriores = [];
 
         // Forzar recarga visual
         InvokeAsync(StateHasChanged);

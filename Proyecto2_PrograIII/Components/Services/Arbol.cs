@@ -17,7 +17,6 @@ namespace Proyecto2_PrograIII.Components.Services
             return NodoRaiz == null;
         }
 
-
         public void Insertar(Nodo nodo, int Dato)
         {
 
@@ -53,7 +52,6 @@ namespace Proyecto2_PrograIII.Components.Services
             cantidadNodos++;
         }
 
-
         public Nodo Busqueda(Nodo nodo, int dato)
         {
             if (nodo == null)
@@ -73,6 +71,7 @@ namespace Proyecto2_PrograIII.Components.Services
                 return nodo;
             }
         }
+
         public void Eliminar(int dato)
         {
             Nodo nodoEliminar = Busqueda(NodoRaiz, dato);
@@ -163,9 +162,6 @@ namespace Proyecto2_PrograIII.Components.Services
             }
 
             //Eliminnar si tiene un solo hijo
-
-
-
 
         }
 
@@ -260,8 +256,35 @@ namespace Proyecto2_PrograIII.Components.Services
             return resultado;
         }
 
+        public int ObtenerGrado(Nodo nodo)
+        {
+            if (nodo == null)
+                return 0;
 
+            int grado = 0;
 
+            if (nodo.RamaIzquierda != null) grado++;
+            if (nodo.RamaDerecha != null) grado++;
+
+            return grado;
+        }
+
+        public int ObtenerNivel(Nodo nodo, int valorBuscado, int nivelActual = 0)
+        {
+            if (nodo == null)
+                return -1; // No encontrado
+
+            if (Convert.ToInt32(nodo.Dato) == valorBuscado)
+                return nivelActual;
+
+            // Buscar en la izquierda
+            int nivelIzq = ObtenerNivel(nodo.RamaIzquierda, valorBuscado, nivelActual + 1);
+            if (nivelIzq != -1)
+                return nivelIzq;
+
+            // Buscar en la derecha
+            return ObtenerNivel(nodo.RamaDerecha, valorBuscado, nivelActual + 1);
+        }
 
         /*private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
         {
@@ -284,6 +307,7 @@ namespace Proyecto2_PrograIII.Components.Services
                 sb.AppendLine($"{nodo.Dato};");
             }
         }*/
+
         private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
         {
             if (nodo == null) return;
@@ -323,7 +347,6 @@ namespace Proyecto2_PrograIII.Components.Services
             }
         }
 
-
         public string GenerarDot()
         {
             var sb = new StringBuilder();
@@ -333,7 +356,6 @@ namespace Proyecto2_PrograIII.Components.Services
             sb.AppendLine("}");
             return sb.ToString();
         }
-
 
         public void RecorridoInOrden(Nodo nodo)
         {
