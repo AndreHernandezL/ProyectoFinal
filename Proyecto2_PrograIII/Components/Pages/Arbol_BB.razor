@@ -109,7 +109,36 @@
                     </div>
                 </div>
                 <!---------------------------------------------->
-                <div class="tab-pane fade" id="nav-NodoNivelGrado" role="tabpanel">Contenido Grados y Nivel</div>
+                <div class="tab-pane fade" id="nav-NodoNivelGrado" role="tabpanel">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-primary" @onclick="verArbol">Ver Arbol</button>
+                        </div>
+                        <div class="col-4">
+                            <label for="dato" class="form-label">Dato a Buscar</label>
+                            <input type="number" class="form-control" id="dato" @bind="dato">
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-primary" @onclick="NodoGradoNivel">Buscar</button>
+                        </div>
+                        <div class="col-12 mt-3 d-flex">
+                            <div class="alert alert-primary" role="alert" style="width: fit-content">
+                                <p><strong>Nivel del Nodo: </strong>@(nivel)</p>
+                                <p><strong>Grado del Nodo: </strong>@(grado)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!---------------------------------------------->
                 <div class="tab-pane fade" id="nav-camInterExter" role="tabpanel">Contenido Caminos</div>
                 <!---------------------------------------------->
@@ -140,6 +169,9 @@
 
     private string[] interiores = [];
     private string[] exteriores = [];
+
+    private int grado = 0;
+    private int nivel = 0;
 
 
     public async Task RenderDot()
@@ -177,13 +209,32 @@
 
     private void NodoInterExter()
     {
-        Arbol arbolito = bosque.Arboles[arbolSeleccionado];
-        string inter = arbolito.NodosInternos(arbolito.NodoRaiz);
-        string exter = arbolito.NodosExternos(arbolito.NodoRaiz);
-        interiores = inter.Split(' ');
-        exteriores = exter.Split(' ');
-        verArbol();
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "")
+        {
+            Arbol arbolito = bosque.Arboles[arbolSeleccionado];
+            string inter = arbolito.NodosInternos(arbolito.NodoRaiz);
+            string exter = arbolito.NodosExternos(arbolito.NodoRaiz);
+            interiores = inter.Split(' ');
+            exteriores = exter.Split(' ');
+            verArbol();
+        }
+    }
 
+    private void NodoGradoNivel()
+    {
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "" && dato != 0)
+        {
+            Arbol arbolito = bosque.Arboles[arbolSeleccionado];
+            Nodo nodito = arbolito.Busqueda(arbolito.NodoRaiz, dato);
+            if (nodito != null)
+            {
+                int grado = arbolito.ObtenerGrado(nodito);
+                int nivel = arbolito.ObtenerNivel(arbolito.NodoRaiz, dato);
+
+                this.grado = grado;
+                this.nivel = nivel;
+            }
+        }
     }
 
     private void Ingresar (){
@@ -214,9 +265,12 @@
     private void verArbol()
     {
         //RENDERIZAMOS LA IMAGEN DEL ARBOL
-        var arbolito = bosque.Arboles[arbolSeleccionado];
-        dotCode = arbolito.GenerarDot();
-        RenderDot();
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "")
+        {
+            var arbolito = bosque.Arboles[arbolSeleccionado];
+            dotCode = arbolito.GenerarDot();
+            RenderDot();     
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

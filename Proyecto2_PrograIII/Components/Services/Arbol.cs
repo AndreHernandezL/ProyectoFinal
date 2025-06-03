@@ -223,7 +223,7 @@ namespace Proyecto2_PrograIII.Components.Services
             // Nodo interno: tiene al menos un hijo (izquierdo o derecho)
             if (nodo.RamaIzquierda != null || nodo.RamaDerecha != null)
             {
-                resultado += $"[{nodo.Dato}] ";
+                resultado += $"{nodo.Dato} ";
             }
 
             // Recorre rama derecha
@@ -247,7 +247,7 @@ namespace Proyecto2_PrograIII.Components.Services
             // Nodo hoja: no tiene hijos
             if (nodo.RamaIzquierda == null && nodo.RamaDerecha == null)
             {
-                resultado += $"[{nodo.Dato}] ";
+                resultado += $"{nodo.Dato} ";
             }
 
             // Recorre rama derecha
@@ -269,7 +269,7 @@ namespace Proyecto2_PrograIII.Components.Services
             return grado;
         }
 
-        public int ObtenerNivel(Nodo nodo, int valorBuscado, int nivelActual = 0)
+        public int ObtenerNivel(Nodo nodo, int valorBuscado, int nivelActual = 1)
         {
             if (nodo == null)
                 return -1; // No encontrado
@@ -284,6 +284,39 @@ namespace Proyecto2_PrograIII.Components.Services
 
             // Buscar en la derecha
             return ObtenerNivel(nodo.RamaDerecha, valorBuscado, nivelActual + 1);
+        }
+
+
+        public int LongitudCaminoInterno(Nodo nodo, int nivel = 0)
+        {
+            if (nodo == null)
+                return 0;
+
+            // Si el nodo tiene al menos un hijo, cuenta como interno
+            bool esInterno = nodo.RamaIzquierda != null || nodo.RamaDerecha != null;
+
+            int suma = esInterno ? nivel : 0;
+
+            suma += LongitudCaminoInterno(nodo.RamaIzquierda, nivel + 1);
+            suma += LongitudCaminoInterno(nodo.RamaDerecha, nivel + 1);
+
+            return suma;
+        }
+
+        public int LongitudCaminoExterno(Nodo nodo, int nivel = 0)
+        {
+            if (nodo == null)
+            {
+                // Si llegamos a un hijo nulo, cuenta como nodo externo
+                return nivel;
+            }
+
+            int suma = 0;
+            suma += LongitudCaminoExterno(nodo.RamaIzquierda, nivel + 1);
+            suma += LongitudCaminoExterno(nodo.RamaDerecha, nivel + 1);
+
+            return suma;
+
         }
 
         /*private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
