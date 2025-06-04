@@ -80,8 +80,17 @@ namespace Proyecto2_PrograIII.Components.Services
         public void CambioRamas(string nombreArbolito)
         {
             var arbolito = Arboles[nombreArbolito];
-            Arbol NewArbol = new Arbol();
-            RecorridoPreOrden(arbolito.NodoRaiz, NewArbol);
+            Arbol NewArbol = new Arbol(true);
+
+            if (arbolito.contrario)
+            {
+                RecorridoPreOrdenEspejo(arbolito.NodoRaiz, NewArbol);
+            }
+            else
+            {
+                RecorridoPreOrden(arbolito.NodoRaiz, NewArbol);
+            }
+            
             Arboles[nombreArbolito] = NewArbol;
 
         }
@@ -97,6 +106,20 @@ namespace Proyecto2_PrograIII.Components.Services
                 newArbol.InsertarEspejo(newArbol.NodoRaiz, Convert.ToInt32(nodo.Dato));
                 RecorridoPreOrden(nodo.RamaIzquierda, newArbol);
                 RecorridoPreOrden(nodo.RamaDerecha, newArbol);
+            }
+        }
+
+        public void RecorridoPreOrdenEspejo(Nodo nodo, Arbol newArbol)
+        {
+            if (nodo == null)
+            {
+                return;
+            }
+            else
+            {
+                newArbol.Insertar(newArbol.NodoRaiz, Convert.ToInt32(nodo.Dato));
+                RecorridoPreOrdenEspejo(nodo.RamaDerecha, newArbol);
+                RecorridoPreOrdenEspejo(nodo.RamaIzquierda, newArbol);
             }
         }
     }

@@ -6,10 +6,18 @@ namespace Proyecto2_PrograIII.Components.Services
     {
         public Nodo? NodoRaiz { get; set; }
         int cantidadNodos = 0;
+        public bool contrario;
 
         public Arbol()
         {
             NodoRaiz = null;
+            contrario = false;
+        }
+
+        public Arbol(bool contrario)
+        {
+            NodoRaiz = null;
+            this.contrario = contrario;
         }
 
         bool EstaVacio()
