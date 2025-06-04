@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Proyecto2_PrograIII.Components.Services
 {
@@ -31,5 +32,72 @@ namespace Proyecto2_PrograIII.Components.Services
             return nombre;
         }
 
+        public string CompararArboles(Arbol arbolA, Arbol arbolB)
+        {
+            var sb = new StringBuilder();
+
+            int nodosA = ContarNodos(arbolA.NodoRaiz);
+            int nodosB = ContarNodos(arbolB.NodoRaiz);
+
+            int nivelesA = Altura(arbolA.NodoRaiz);
+            int nivelesB = Altura(arbolB.NodoRaiz);
+
+            bool similares = nodosA == nodosB;
+            bool equivalentes = nivelesA == nivelesB;
+
+            if (similares)
+                sb.AppendLine("✓ Son similares: tienen la misma cantidad de nodos.|");
+            else
+                sb.AppendLine("✗ No son similares: tienen diferente cantidad de nodos.|");
+
+            if (equivalentes)
+                sb.AppendLine("✓ Son equivalentes: tienen la misma cantidad de niveles.|");
+            else
+                sb.AppendLine("✗ No son equivalentes: tienen diferente cantidad de niveles.|");
+
+            if (!similares || !equivalentes)
+                sb.AppendLine("✗ Son distintos: no tienen la misma cantidad de nodos y niveles.|");
+            else
+                sb.AppendLine("✓ Son iguales: tiene la misma cantidad de nodos o niveles.|");
+
+            return sb.ToString();
+        }
+
+
+        public int ContarNodos(Nodo nodo)
+        {
+            if (nodo == null) return 0;
+            return 1 + ContarNodos(nodo.RamaIzquierda) + ContarNodos(nodo.RamaDerecha);
+        }
+
+        public int Altura(Nodo nodo)
+        {
+            if (nodo == null) return 0;
+            return 1 + Math.Max(Altura(nodo.RamaIzquierda), Altura(nodo.RamaDerecha));
+        }
+
+
+        public void CambioRamas(string nombreArbolito)
+        {
+            var arbolito = Arboles[nombreArbolito];
+            Arbol NewArbol = new Arbol();
+            RecorridoPreOrden(arbolito.NodoRaiz, NewArbol);
+            Arboles[nombreArbolito] = NewArbol;
+
+        }
+
+        public void RecorridoPreOrden(Nodo nodo, Arbol newArbol)
+        {
+            if (nodo == null)
+            {
+                return;
+            }
+            else
+            {
+                newArbol.InsertarEspejo(newArbol.NodoRaiz, Convert.ToInt32(nodo.Dato));
+                RecorridoPreOrden(nodo.RamaIzquierda, newArbol);
+                RecorridoPreOrden(nodo.RamaDerecha, newArbol);
+            }
+        }
     }
 }

@@ -52,6 +52,42 @@ namespace Proyecto2_PrograIII.Components.Services
             cantidadNodos++;
         }
 
+        public void InsertarEspejo(Nodo nodo, int Dato)
+        {
+
+            if (EstaVacio())
+            {
+                Nodo NuevoNodo = new Nodo(Dato);
+                NodoRaiz = NuevoNodo;
+            }
+            else if (Dato < Convert.ToInt32(nodo.Dato))
+            {
+                if (nodo.RamaDerecha == null)
+                {
+                    Nodo NuevoNodo = new Nodo(Dato);
+                    nodo.RamaDerecha = NuevoNodo;
+                }
+                else
+                {
+                    InsertarEspejo(nodo.RamaDerecha, Dato);
+                }
+            }
+            else if (Dato > Convert.ToInt32(nodo.Dato))
+            {
+                if (nodo.RamaIzquierda == null)
+                {
+                    Nodo newNodo = new Nodo(Dato);
+                    nodo.RamaIzquierda = newNodo;
+                }
+                else
+                {
+                    InsertarEspejo(nodo.RamaIzquierda, Dato);
+                }
+            }
+            cantidadNodos++;
+        }
+
+
         public Nodo Busqueda(Nodo nodo, int dato)
         {
             if (nodo == null)
@@ -72,97 +108,23 @@ namespace Proyecto2_PrograIII.Components.Services
             }
         }
 
-        public void Eliminar(int dato)
+        public void EliminarTodasLasHojas()
         {
-            Nodo nodoEliminar = Busqueda(NodoRaiz, dato);
+            NodoRaiz = EliminarHojas(NodoRaiz);
+        }
 
-            if (nodoEliminar == null)
-            {
-                Console.WriteLine("No se encontro el dato Buscado.");
-                return;
-            }
+        public Nodo EliminarHojas(Nodo nodo)
+        {
+            if (nodo == null)
+                return null;
 
-            if (cantidadNodos == 1)
-            {
-                NodoRaiz = null;
-                return;
-            }
+            if (nodo.RamaIzquierda == null && nodo.RamaDerecha == null)
+                return null; // Es una hoja, eliminarla
 
-            //Eliminamos si es una hoja
-            if (nodoEliminar.RamaIzquierda == null && nodoEliminar.RamaDerecha == null)
-            {
-                Nodo NodoPadre = Padre(NodoRaiz, dato);
+            nodo.RamaIzquierda = EliminarHojas(nodo.RamaIzquierda);
+            nodo.RamaDerecha = EliminarHojas(nodo.RamaDerecha);
 
-                if (NodoPadre.RamaDerecha != null && NodoPadre.RamaDerecha.Dato.Equals(dato))
-                {
-                    NodoPadre.RamaDerecha = null;
-                }
-                else if (NodoPadre.RamaIzquierda != null && NodoPadre.RamaIzquierda.Dato.Equals(dato))
-                {
-                    NodoPadre.RamaIzquierda = null;
-                }
-            }
-
-            //Si detectamos que tiene 1 hijos
-            else if ((nodoEliminar.RamaIzquierda != null && nodoEliminar.RamaDerecha == null) ||
-               (nodoEliminar.RamaDerecha != null && nodoEliminar.RamaIzquierda == null))
-            {
-                Nodo NodoPadre = Padre(NodoRaiz, dato);
-
-
-                if (NodoPadre.RamaIzquierda != null && NodoPadre.RamaIzquierda.Dato.Equals(dato))
-                {
-                    if (nodoEliminar.RamaIzquierda != null)
-                    {
-                        NodoPadre.RamaIzquierda = nodoEliminar.RamaIzquierda;
-                    }
-                    else
-                    {
-                        NodoPadre.RamaIzquierda = nodoEliminar.RamaDerecha;
-                    }
-                    nodoEliminar = null;
-                }
-
-                if (NodoPadre.RamaDerecha != null && NodoPadre.RamaDerecha.Dato.Equals(dato))
-                {
-                    if (nodoEliminar.RamaIzquierda != null)
-                    {
-                        NodoPadre.RamaDerecha = nodoEliminar.RamaIzquierda;
-                    }
-                    else
-                    {
-                        NodoPadre.RamaDerecha = nodoEliminar.RamaDerecha;
-                    }
-                    nodoEliminar = null;
-                }
-            }
-
-
-            //Si detectamos que tiene 2 hijos
-            else if (nodoEliminar.RamaDerecha != null && nodoEliminar.RamaIzquierda != null)
-            {
-                Nodo Sucesor = sucesor(nodoEliminar.RamaDerecha);
-                Nodo PadreSucesor = Padre(NodoRaiz, Convert.ToInt32(Sucesor.Dato));
-
-                nodoEliminar.Dato = Sucesor.Dato;
-
-                if (Sucesor.RamaDerecha != null)
-                {
-                    PadreSucesor.RamaDerecha = Sucesor.RamaDerecha;
-                    Sucesor = null;
-                }
-                else if (nodoEliminar == PadreSucesor)
-                {
-                    PadreSucesor.RamaDerecha = null;
-                }
-                else
-                {
-                    PadreSucesor.RamaIzquierda = null;
-                }
-            }
-
-            //Eliminnar si tiene un solo hijo
-
+            return nodo;
         }
 
         public Nodo sucesor(Nodo nodo)
@@ -287,15 +249,15 @@ namespace Proyecto2_PrograIII.Components.Services
         }
 
 
-        public int LongitudCaminoInterno(Nodo nodo, int nivel = 0)
+        public int LongitudCaminoInterno(Nodo nodo, int nivel = 1)
         {
             if (nodo == null)
                 return 0;
 
             // Si el nodo tiene al menos un hijo, cuenta como interno
-            bool esInterno = nodo.RamaIzquierda != null || nodo.RamaDerecha != null;
+            //bool esInterno = nodo.RamaIzquierda != null || nodo.RamaDerecha != null;
 
-            int suma = esInterno ? nivel : 0;
+            int suma = nivel;
 
             suma += LongitudCaminoInterno(nodo.RamaIzquierda, nivel + 1);
             suma += LongitudCaminoInterno(nodo.RamaDerecha, nivel + 1);
@@ -303,7 +265,7 @@ namespace Proyecto2_PrograIII.Components.Services
             return suma;
         }
 
-        public int LongitudCaminoExterno(Nodo nodo, int nivel = 0)
+        public int LongitudCaminoExterno(Nodo nodo, int nivel = 1)
         {
             if (nodo == null)
             {
@@ -319,27 +281,7 @@ namespace Proyecto2_PrograIII.Components.Services
 
         }
 
-        /*private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
-        {
-            if (nodo == null) return;
-
-            if (nodo.RamaIzquierda != null)
-            {
-                sb.AppendLine($"  {nodo.Dato} -> {nodo.RamaIzquierda.Dato};");
-                GenerarDotRecursivo(nodo.RamaIzquierda, sb);
-            }
-            if (nodo.RamaDerecha != null)
-            {
-                sb.AppendLine($"{nodo.Dato} -> {nodo.RamaDerecha.Dato};");
-                GenerarDotRecursivo(nodo.RamaDerecha, sb);
-            }
-
-            // Si es hoja, asegurarse de que aparezca en el gráfico
-            if (nodo.RamaIzquierda== null && nodo.RamaDerecha== null)
-            {
-                sb.AppendLine($"{nodo.Dato};");
-            }
-        }*/
+     
 
         private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
         {
@@ -390,46 +332,5 @@ namespace Proyecto2_PrograIII.Components.Services
             return sb.ToString();
         }
 
-        public void RecorridoInOrden(Nodo nodo)
-        {
-            if (nodo == null)
-            {
-                return;
-            }
-            else
-            {
-                RecorridoInOrden(nodo.RamaIzquierda);
-                Console.WriteLine($"{nodo.Dato}");
-                RecorridoInOrden(nodo.RamaDerecha);
-            }
-        }
-
-        public void RecorridoPreOrden(Nodo nodo)
-        {
-            if (nodo == null)
-            {
-                return;
-            }
-            else
-            {
-                Console.WriteLine($"{nodo.Dato}");
-                RecorridoPreOrden(nodo.RamaIzquierda);
-                RecorridoPreOrden(nodo.RamaDerecha);
-            }
-        }
-
-        public void RecorridoPostOrden(Nodo nodo)
-        {
-            if (nodo == null)
-            {
-                return;
-            }
-            else
-            {
-                RecorridoPostOrden(nodo.RamaIzquierda);
-                RecorridoPostOrden(nodo.RamaDerecha);
-                Console.WriteLine($"{nodo.Dato}");
-            }
-        }
     }
 }

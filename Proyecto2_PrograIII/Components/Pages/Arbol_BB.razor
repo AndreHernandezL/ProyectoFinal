@@ -140,13 +140,101 @@
                     </div>
                 </div>
                 <!---------------------------------------------->
-                <div class="tab-pane fade" id="nav-camInterExter" role="tabpanel">Contenido Caminos</div>
+                <div class="tab-pane fade" id="nav-camInterExter" role="tabpanel">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-success" @onclick="LongitudCaminos">Ver Longitud</button>
+                        </div>
+                        <div class="col-12 mt-3 d-flex">
+                            <div class="alert alert-primary" role="alert" style="width: fit-content">
+                                <p><strong>Longitud de Camino Interno: </strong>@(lci)</p>
+                                <p><strong>Longitud de Camino Externo: </strong>@(lce)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!---------------------------------------------->
-                <div class="tab-pane fade" id="nav-comparacion" role="tabpanel">Contenido Comparación</div>
+                <div class="tab-pane fade" id="nav-comparacion" role="tabpanel">
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolitoA">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-5">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolitoB">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col d-2 d-flex justify-content-center align-items-end">
+                            <button class="btn btn-success" @onclick="compracionArboles">Comparar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-3" role="alert" style="width: fit-content;">
+                            <p><strong>Resultados:</strong>
+                                @foreach (var item in respuesta)
+                                {
+                                    <br>@(item)
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <!---------------------------------------------->
-                <div class="tab-pane fade" id="nav-eliminacion" role="tabpanel">Contenido Eliminación</div>
+                <div class="tab-pane fade" id="nav-eliminacion" role="tabpanel">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-danger" @onclick="EliminarHojas">Eliminar Hojas</button>
+                        </div>
+                    </div>
+                </div>
                 <!---------------------------------------------->
-                <div class="tab-pane fade" id="nav-intercambio" role="tabpanel">Contenido Intercambio</div>
+                <div class="tab-pane fade" id="nav-intercambio" role="tabpanel">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="arbolSelecionado" class="form-label">Arbol</label>
+                            <select id="arbolSelecionado" class="form-select" @bind="arbolSeleccionado">
+                                <option value="0" selected>Seleccione un arbol</option>
+                                @foreach (var arbolito in bosque.Arboles)
+                                {
+                                    <option value="@arbolito.Key">@arbolito.Key</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-end">
+                            <button class="btn btn-info" @onclick="CambioRamas">Cambiar ramas</button>
+                        </div>
+                    </div>
+                </div>
                 <!---------------------------------------------->
             </div>
         </nav>
@@ -154,11 +242,24 @@
     </div>
 </div>
 
-<div id="graphContainer" class="mt-5 d-flex justify-content-center"></div>
+<div class="row mt-2">
+    <div class="col-12">
+        <div id="graphContainer" class="d-flex justify-content-center"></div>
+    </div>
+    <div class="col-6">
+        <div id="graphContainerA" class="d-flex justify-content-center"></div>
+    </div>
+    <div class="col-6">
+        <div id="graphContainerB" class="d-flex justify-content-center"></div>
+    </div>
+</div>
+
 @rendermode InteractiveServer
 @code {
     Bosque bosque = new Bosque();
     private ElementReference graphContainer;
+    private ElementReference graphContainerA;
+    private ElementReference graphContainerB;
     private string dotCode = string.Empty;
     private int dato = 0;
     private string opcionIngreso = "0";
@@ -173,11 +274,18 @@
     private int grado = 0;
     private int nivel = 0;
 
+    private int lci = 0;
+    private int lce = 0;
 
-    public async Task RenderDot()
+    private string arbolitoA = string.Empty;
+    private string arbolitoB = string.Empty;
+    private string[] respuesta = [];
+
+
+    public async Task RenderDot(string contenedor)
     {
         var svg = await JS.InvokeAsync<string>("renderGraphviz", dotCode);
-        await JS.InvokeVoidAsync("eval", $"document.getElementById('graphContainer').innerHTML = `{svg}`;");
+        await JS.InvokeVoidAsync("eval", $"document.getElementById('{contenedor}').innerHTML = `{svg}`;");
 
     }
 
@@ -237,6 +345,31 @@
         }
     }
 
+    private void LongitudCaminos(){
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "")
+        {
+            Arbol arbolito = bosque.Arboles[arbolSeleccionado];
+            lci = arbolito.LongitudCaminoInterno(arbolito.NodoRaiz);
+            lce = arbolito.LongitudCaminoExterno(arbolito.NodoRaiz);
+            verArbol();
+        }
+    }
+
+    private void compracionArboles(){
+        if (arbolitoA != "0" && arbolitoA != "" && arbolitoB != "0" && arbolitoB != "")
+        {
+            var arbolitoA_ = bosque.Arboles[arbolitoA];
+            dotCode = arbolitoA_.GenerarDot();
+            RenderDot("graphContainerA");
+
+            var arbolitoB_ = bosque.Arboles[arbolitoB];
+            dotCode = arbolitoB_.GenerarDot();
+            RenderDot("graphContainerB");
+
+            respuesta = bosque.CompararArboles(arbolitoA_, arbolitoB_).Split("|");
+        }
+    }
+
     private void Ingresar (){
         if (opcionIngreso.Equals("0") && dato != 0)
         {
@@ -248,7 +381,7 @@
             //RENDERIZAMOS LA IMAGEN DEL ARBOL
             opcionIngreso = nombreArbol;
             dotCode = nuevoArbol.GenerarDot();
-            RenderDot();
+            RenderDot("graphContainer");
             dato = 0;
         }
         else if(!opcionIngreso.Equals("0") && dato != 0){
@@ -257,8 +390,39 @@
 
             //RENDERIZAMOS LA IMAGEN DEL ARBOL
             dotCode = arbolito.GenerarDot();
-            RenderDot();
+            RenderDot("graphContainer");
             dato = 0;
+        }
+    }
+
+    private void EliminarHojas(){
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "")
+        {
+            var arbolito = bosque.Arboles[arbolSeleccionado];
+            dotCode = arbolito.GenerarDot();
+            RenderDot("graphContainerA");
+
+            arbolito.EliminarTodasLasHojas();
+
+            dotCode = arbolito.GenerarDot();
+            RenderDot("graphContainerB");
+        }
+    }
+
+    private void CambioRamas(){
+        if (arbolSeleccionado != "0" && arbolSeleccionado != "")
+        {
+            var arbolito = bosque.Arboles[arbolSeleccionado];
+            dotCode = arbolito.GenerarDot();
+            RenderDot("graphContainerA");
+
+            bosque.CambioRamas(arbolSeleccionado);
+
+            arbolito = bosque.Arboles[arbolSeleccionado];
+            dotCode = arbolito.GenerarDot();
+            RenderDot("graphContainerB");
+            
+
         }
     }
 
@@ -269,7 +433,7 @@
         {
             var arbolito = bosque.Arboles[arbolSeleccionado];
             dotCode = arbolito.GenerarDot();
-            RenderDot();     
+            RenderDot("graphContainer");
         }
     }
 
@@ -292,11 +456,11 @@
         dato = 0;
         interiores = [];
         exteriores = [];
+        respuesta = [];
 
         // Forzar recarga visual
         InvokeAsync(StateHasChanged);
 
-        Console.WriteLine($"Pestaña activa: {tabId}");
     }
     
 }
