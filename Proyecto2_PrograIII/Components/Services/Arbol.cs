@@ -95,7 +95,6 @@ namespace Proyecto2_PrograIII.Components.Services
             cantidadNodos++;
         }
 
-
         public Nodo Busqueda(Nodo nodo, int dato)
         {
             if (nodo == null)
@@ -133,18 +132,6 @@ namespace Proyecto2_PrograIII.Components.Services
             nodo.RamaDerecha = EliminarHojas(nodo.RamaDerecha);
 
             return nodo;
-        }
-
-        public Nodo sucesor(Nodo nodo)
-        {
-            if (nodo.RamaIzquierda != null)
-            {
-                return sucesor(nodo.RamaIzquierda);
-            }
-            else
-            {
-                return nodo;
-            }
         }
 
         public Nodo Padre(Nodo nodo, int dato)
@@ -256,7 +243,6 @@ namespace Proyecto2_PrograIII.Components.Services
             return ObtenerNivel(nodo.RamaDerecha, valorBuscado, nivelActual + 1);
         }
 
-
         public int LongitudCaminoInterno(Nodo nodo, int nivel = 1)
         {
             if (nodo == null)
@@ -289,8 +275,7 @@ namespace Proyecto2_PrograIII.Components.Services
 
         }
 
-     
-
+    
         private void GenerarDotRecursivo(Nodo nodo, StringBuilder sb)
         {
             if (nodo == null) return;
@@ -329,7 +314,6 @@ namespace Proyecto2_PrograIII.Components.Services
                 sb.AppendLine($"  {nodo.Dato};");
             }
         }
-
         public string GenerarDot()
         {
             var sb = new StringBuilder();

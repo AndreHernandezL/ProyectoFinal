@@ -421,7 +421,7 @@
             arbolito = bosque.Arboles[arbolSeleccionado];
             dotCode = arbolito.GenerarDot();
             RenderDot("graphContainerB");
-            
+
 
         }
     }
@@ -457,6 +457,9 @@
         interiores = [];
         exteriores = [];
         respuesta = [];
+        lci = 0;
+        lce = 0;
+        arbolSeleccionado = "0";
 
         // Forzar recarga visual
         InvokeAsync(StateHasChanged);

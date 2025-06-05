@@ -63,7 +63,6 @@ namespace Proyecto2_PrograIII.Components.Services
             return sb.ToString();
         }
 
-
         public int ContarNodos(Nodo nodo)
         {
             if (nodo == null) return 0;
@@ -76,18 +75,19 @@ namespace Proyecto2_PrograIII.Components.Services
             return 1 + Math.Max(Altura(nodo.RamaIzquierda), Altura(nodo.RamaDerecha));
         }
 
-
         public void CambioRamas(string nombreArbolito)
         {
             var arbolito = Arboles[nombreArbolito];
-            Arbol NewArbol = new Arbol(true);
+            Arbol NewArbol;
 
             if (arbolito.contrario)
             {
+                NewArbol = new Arbol();
                 RecorridoPreOrdenEspejo(arbolito.NodoRaiz, NewArbol);
             }
             else
             {
+                NewArbol = new Arbol(true);
                 RecorridoPreOrden(arbolito.NodoRaiz, NewArbol);
             }
             
